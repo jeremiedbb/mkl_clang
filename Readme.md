@@ -1,10 +1,10 @@
 # Have fun with mkl openmp clang cython
 
 ```
-make cython
+make cython  # segfault
 ```
 or
 ```
-make c
+make c       # no segfault
 ```
 
