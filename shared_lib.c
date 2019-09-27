@@ -9,10 +9,6 @@
 
 //int main(int argc, char **argv){
 int func(){
-    printf("shared libraries:\n");
-    dl_iterate_phdr(callback, NULL);
-    printf("\n");
-
     int m = 10000,
         n = 1000,
         k = 100;
@@ -57,6 +53,10 @@ int func(){
     }
 
     free(A), free(B), free(C);
+
+    printf("shared libraries:\n");
+    dl_iterate_phdr(callback, NULL);
+    printf("\n");
 
     return 0;
 }
