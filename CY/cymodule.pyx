@@ -3,8 +3,6 @@ from cython.parallel import parallel, prange
 from libc.stdlib cimport malloc, free
 from libc.stdio cimport printf
 
-#from scipy.linalg.cython_blas cimport dgemm
-
 cdef extern from "mkl_blas.h":
     void dgemm 'dgemm' (
         const char *transa, const char *transb, const int *m, const int *n, const int *k,
@@ -48,61 +46,13 @@ def prange_blas(int nthreads):
 
     for i in range(m * n):
         if C[i] != k:
-            print("{} WRONG RESULT {}".format(C[i], i))
+            printf("%f WRONG RESULT %i", C[i], i)
             break
     
     free(A)
     free(B)
     free(C)
 
-
-def only_blas():
-    cdef:
-        int m = 1000
-        int n = 100
-        int k = 10
-
-        char* trans = 't'
-        char* no_trans = 'n'
-        double alpha = 1.0
-        double beta = 0.0
-
-        int i
-
-        double *A = <double*> malloc(m * k * sizeof(double))
-        double *B = <double*> malloc(n * k * sizeof(double))
-        double *C = <double*> malloc(m * n * sizeof(double))
-
-    for i in range(m * k):
-        A[i] = 1.0
-    
-    for i in range(n):
-        B[i] = 1.0
-
-    dgemm(trans, no_trans, &n, &m, &k,
-          &alpha, B, &k, A, &k,
-          &beta, C, &n)
-        
-    free(A)
-    free(B)
-    free(C)
-
-
-def only_prange(int nthreads):
-    cdef:
-        int m = 1000
-        int k = 10
-
-        int i
-
-        double *A = <double*> malloc(m * k * sizeof(double))
-        double *B = <double*> malloc(m * k * sizeof(double))
-
-    for i in range(m * k):
-        A[i] = 1.0
-    
-    for i in prange(m * k, nogil=True, num_threads=nthreads):
-        B[i] = A[i]
-    
-    free(A)
-    free(B)
+    printf("\n***********\n")
+    printf("* SUCCESS *\n")
+    printf("***********\n\n")

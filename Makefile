@@ -1,34 +1,59 @@
 CC          = clang-8
-CFLAGS      = -Wall -Werror
+CFLAGS      = -Wall -Werror -fopenmp
+LDFLAGS     = -shared -fopenmp $(LIBS)
+LIBS        = -lmkl_rt
+# CC          = /home/jeremie/R/C/llvm-project/build/bin/clang
+# CFLAGS      = -Wall -Werror -I/home/jeremie/R/C/llvm-project/build/projects/openmp/runtime/src
+# LDFLAGS     = -shared -L/home/jeremie/R/C/llvm-project/build/lib -Wl,-rpath=/home/jeremie/R/C/llvm-project/build/lib
+# LIBS        = -lomp -lmkl_rt
 LINKER      = $(CC)
 
 nothing:
 
-cython: build_cython test_cython
+c: clean_c build_c test_c
 
-build_cython:
-	@echo "Build\n"
-	CC=$(CC) python setup.py build_ext -i
-
-test_cython:
-	@echo "\n\nTest\n"
-	python -c 'from prange_blas import prange_blas; prange_blas(4)'
-	#python -c 'from prange_blas import prange_blas; from threadpoolctl import threadpool_info; threadpool_info(); prange_blas(4)'
-
-c: build_c test_c
-	
 build_c:
 	@echo "Build\n"
-	$(CC) $(CFLAGS) -fPIC -c -fopenmp -o shared_lib.o shared_lib.c
-	$(LINKER) -shared -fopenmp -o libshared_lib.so shared_lib.o -lmkl_rt
-	$(CC) $(CFLAGS) -I. -c main.c -o main.o
-	$(LINKER) -L. -Wl,-rpath=. main.o -o run -lshared_lib
+	$(CC) $(CFLAGS) -fPIC -c -o C/cmodule.o C/cmodule.c
+	$(LINKER) $(LDFLAGS) -o C/libcmodule.so C/cmodule.o
+	$(CC) -Wall -Werror -IC -c -o C/ctest.o C/ctest.c 
+	$(LINKER) -LC -Wl,-rpath=C -o C/ctest C/ctest.o -ldl
 
 test_c:
 	@echo "\n\nTest\n"
-	./run
+	C/ctest
 
-clean:
-	rm -f *.so *.o run
-	rm prange_blas.c
-	rm -rf build
+clean_c:
+	rm -f C/cmodule.o C/libcmodule.so C/ctest.o C/ctest
+
+cy: clean_cy build_cy test_cy
+
+build_cy:
+	@bash -c "pushd CY/ &&\
+			  echo 'Build\n' &&\
+			  CC=$(CC) CFLAGS='$(CFLAGS)' LDFLAGS='$(LDFLAGS)' python setup.py build_ext -i &&\
+			  popd"
+
+test_cy:
+	@echo "\n\nTest\n"
+	python CY/cytest.py
+
+clean_cy:
+	rm -rf CY/build
+	rm -f CY/cymodule.c CY/cymodule.cp*
+
+cp: clean_cp build_cp test_cp
+
+build_cp:
+	@echo "Build\n"
+	$(CC) $(CFLAGS) -I/home/jeremie/miniconda/envs/mkl-segfault/include/python3.7m -fPIC -c -o CP/cpmodule.o CP/cpmodule.c
+	$(LINKER) $(LDFLAGS) -o CP/cpmodule.so CP/cpmodule.o
+
+test_cp:
+	@echo "\n\nTest\n"
+	python CP/cptest.py
+
+clean_cp:
+	rm -f CP/cpmodule.o CP/cpmodule.so
+
+clean: clean_c clean_cy clean_cp

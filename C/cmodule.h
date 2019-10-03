@@ -1,9 +1,9 @@
-#ifndef shared_lib_h__
-#define shared_lib_h__
+#ifndef cmodule_h__
+#define cmodule_h__
 #define _GNU_SOURCE
 #include <link.h>
- 
-int func();
+
+void prange_blas(int);
 int callback(struct dl_phdr_info*, size_t, void*);
 
 #endif

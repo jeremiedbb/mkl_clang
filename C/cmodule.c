@@ -4,11 +4,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <omp.h>
-#include "shared_lib.h"
+#include "cmodule.h"
 #include "mkl_blas.h"
 
-//int main(int argc, char **argv){
-int func(){
+
+void prange_blas(int nthreads){
     int m = 10000,
         n = 1000,
         k = 100;
@@ -32,7 +32,7 @@ int func(){
         B[i] = 1.0;
     }
     
-    #pragma omp parallel
+    #pragma omp parallel num_threads(nthreads)
     {
         int outer_n = omp_get_num_threads();
         printf("omp num threads in parallel region = %i\n", outer_n);
@@ -58,7 +58,9 @@ int func(){
     dl_iterate_phdr(callback, NULL);
     printf("\n");
 
-    return 0;
+    printf("\n***********\n");
+    printf("* SUCCESS *\n");
+    printf("***********\n\n");
 }
 
 
