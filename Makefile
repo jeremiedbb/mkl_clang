@@ -1,9 +1,9 @@
 CC          = clang-8
-CFLAGS      = -Wall -Werror -fopenmp
+CFLAGS      = -Wall -fopenmp
 LDFLAGS     = -shared -fopenmp $(LIBS)
 LIBS        = -lmkl_rt
 # CC          = /home/jeremie/R/C/llvm-project/build/bin/clang
-# CFLAGS      = -Wall -Werror -I/home/jeremie/R/C/llvm-project/build/projects/openmp/runtime/src
+# CFLAGS      = -Wall -I/home/jeremie/R/C/llvm-project/build/projects/openmp/runtime/src
 # LDFLAGS     = -shared -L/home/jeremie/R/C/llvm-project/build/lib -Wl,-rpath=/home/jeremie/R/C/llvm-project/build/lib
 # LIBS        = -lomp -lmkl_rt
 LINKER      = $(CC)
@@ -16,7 +16,7 @@ build_c:
 	@echo "Build\n"
 	$(CC) $(CFLAGS) -fPIC -c -o C/cmodule.o C/cmodule.c
 	$(LINKER) $(LDFLAGS) -o C/libcmodule.so C/cmodule.o
-	$(CC) -Wall -Werror -IC -c -o C/ctest.o C/ctest.c 
+	$(CC) -Wall -IC -c -o C/ctest.o C/ctest.c 
 	$(LINKER) -LC -Wl,-rpath=C -o C/ctest C/ctest.o -ldl
 
 test_c:
@@ -31,7 +31,7 @@ cy: clean_cy build_cy test_cy
 build_cy:
 	@bash -c "pushd CY/ &&\
 			  echo 'Build\n' &&\
-			  CC=$(CC) CFLAGS='$(CFLAGS)' LDFLAGS='$(LDFLAGS)' python setup.py build_ext -i &&\
+			  CC=$(CC) CFLAGS='-fopenmp' LDFLAGS='$(LDFLAGS)' python setup.py build_ext -i &&\
 			  popd"
 
 test_cy:

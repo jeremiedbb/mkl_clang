@@ -5,6 +5,7 @@
 #include <string.h>
 #include <omp.h>
 #include "cmodule.h"
+#include "mkl.h"
 #include "mkl_blas.h"
 
 
@@ -61,6 +62,16 @@ void prange_blas(int nthreads){
     printf("\n***********\n");
     printf("* SUCCESS *\n");
     printf("***********\n\n");
+}
+
+
+int mkl_get_max_threads_(){
+    return mkl_get_max_threads();
+}
+
+
+int omp_get_max_threads_(){
+    return omp_get_max_threads();
 }
 
 

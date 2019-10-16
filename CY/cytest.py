@@ -1,5 +1,7 @@
+import os
 import sys
 
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 
 class RTLD_GLOBAL_for_import(): 
     def __init__(self): 
