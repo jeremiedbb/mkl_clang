@@ -1,6 +1,6 @@
 all:
-	gcc -o mkl_tb mkl_tb.c -lmkl_rt
-	./mkl_tb
+	gcc -o mkl_tl mkl_tl.c -lmkl_rt
+	./mkl_tl
 
 clean:
-	rm -f mkl_tb
+	rm -f mkl_tl
